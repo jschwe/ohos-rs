@@ -19,7 +19,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use syn::{fold::Fold, parse_macro_input, ItemFn};
 
 // check if first napi macro expand
-static IS_FIRST_NAPI_MACRO: AtomicBool = AtomicBool::new(true);
+static IS_FIRST_NAPI_MACRO: AtomicBool = AtomicBool::new(false);
 
 fn auto_add_register_code() -> proc_macro2::TokenStream {
   let prepare = match IS_FIRST_NAPI_MACRO.load(Ordering::SeqCst) {
@@ -70,10 +70,7 @@ pub fn napi(attr: TokenStream, input: TokenStream) -> TokenStream {
       if env::var("DEBUG_GENERATED_CODE").is_ok() {
         println!("{}", tokens);
       }
-      let prepare = auto_add_register_code();
       let final_token = quote!(
-        #prepare
-
         #tokens
       );
 
